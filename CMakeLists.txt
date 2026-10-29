@@ -234,7 +234,27 @@ install(
   DESTINATION "${CMAKE_INSTALL_CMAKEDIR}"
   COMPONENT dev)
 
-find_package(CycloneDDS REQUIRED)
+# Search for CycloneDDS or download it if requested
+# It is possible to chose a custom tag to download by setting
+# -DCYCLONEDDS_CXX_DOWNLOAD_TAG=<custom_commit_hash/branch> at configure time
+option(CYCLONEDDS_CXX_DOWNLOAD_CYCLONEDDS "Download CycloneDDS if not found locally" ON)
+set(CYCLONEDDS_CXX_DOWNLOAD_TAG "master" CACHE STRING "CycloneDDS tag to download")
+
+if(NOT TARGET CycloneDDS::ddsc)
+  find_package(CycloneDDS OPTIONAL)
+  if(NOT CycloneDDS_FOUND AND CYCLONEDDS_CXX_DOWNLOAD_CYCLONEDDS)
+    message(STATUS "Downloading CycloneDDS tag ${CYCLONEDDS_CXX_DOWNLOAD_TAG}")
+    include(FetchContent)
+    FetchContent_Declare(
+      CycloneDDS
+      GIT_REPOSITORY "https://github.com/eclipse-cyclonedds/cyclonedds.git"
+      GIT_TAG ${CYCLONEDDS_CXX_DOWNLOAD_TAG}
+    )
+    FetchContent_MakeAvailable(CycloneDDS)
+  endif()
+else()
+  message(FATAL_ERROR "Cyclone DDS C library was not found on the system")
+endif()
 
 get_target_property(cyclonedds_has_typelib CycloneDDS::ddsc TYPELIB_IS_AVAILABLE)
 mark_as_advanced(cyclonedds_has_typelib)
