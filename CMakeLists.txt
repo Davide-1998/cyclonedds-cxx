@@ -241,7 +241,7 @@ option(CYCLONEDDS_CXX_DOWNLOAD_CYCLONEDDS "Download CycloneDDS if not found loca
 set(CYCLONEDDS_CXX_DOWNLOAD_TAG "master" CACHE STRING "CycloneDDS tag to download")
 
 if(NOT TARGET CycloneDDS::ddsc)
-  find_package(CycloneDDS OPTIONAL)
+  find_package(CycloneDDS QUIET)
   if(NOT CycloneDDS_FOUND AND CYCLONEDDS_CXX_DOWNLOAD_CYCLONEDDS)
     message(STATUS "Downloading CycloneDDS tag ${CYCLONEDDS_CXX_DOWNLOAD_TAG}")
     include(FetchContent)
